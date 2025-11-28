@@ -4,11 +4,23 @@ import RecordList from './components/RecordList';
 import CreateCard from './components/RecordForm';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 
+
+import { 
+  getRecords, 
+  createRecord, 
+  updatePaymentStatus, 
+  removeRecord 
+} from './api';
+
 function Navigation() {
   return (
     <nav style={{ padding: '20px', borderBottom: '1px solid #ccc' }}>
-      <Link to="/records" style={{ marginRight: '15px', textDecoration: 'none', color: '#007bff' }}>📋 Список записей</Link>
-      <Link to="/create" style={{ textDecoration: 'none', color: '#007bff' }}>➕ Создать запись</Link>
+      <Link to="/records" style={{ marginRight: '15px', textDecoration: 'none', color: '#007bff' }}>
+        📋 Список записей
+      </Link>
+      <Link to="/create" style={{ textDecoration: 'none', color: '#007bff' }}>
+        ➕ Создать запись
+      </Link>
     </nav>
   );
 }
@@ -17,52 +29,90 @@ function NotFound() {
   return (
     <div style={{ padding: '20px' }}>
       <h2>Страница не найдена</h2>
-      <p>Проверьте адрес или перейдите к списку записей.</p>
-      <Link to="/records" style={{ color: '#007bff' }}>К списку записей</Link>
+      <Link to="/records" style={{ color: '#007bff' }}>Вернуться</Link>
     </div>
   );
 }
 
 function App() {
-  const [records, setRecords] = useState(() => {
-    const saved = localStorage.getItem('records');
-    return saved ? JSON.parse(saved) : [];
-  });
 
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // === Загружаем данные при загрузке фронта ===
   useEffect(() => {
-    localStorage.setItem('records', JSON.stringify(records));
-  }, [records]);
+    async function load() {
+      try {
+        const data = await getRecords();
+        setRecords(data);
+      } catch (err) {
+        console.error(err);
+        alert("Ошибка API: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
-  const handleCreateRecord = (newRecord) => {
-    const recordWithId = { ...newRecord, id: Date.now(), payment_status: "Pending" };
-    setRecords(prev => [...prev, recordWithId]);
+  // === Создание записи ===
+  const handleCreateRecord = async (newRecord) => {
+    try {
+      const created = await createRecord(newRecord);
+      setRecords(prev => [...prev, created]);
+    } catch (err) {
+      alert("Ошибка создания: " + err.message);
+    }
   };
 
-  const handleUpdateRecord = (updatedRecord) => {
-    setRecords(prev => prev.map(r => r.id === updatedRecord.id ? updatedRecord : r));
+  // === Обновление статуса оплаты ===
+  const handleUpdateRecord = async (record) => {
+    try {
+      const updated = await updatePaymentStatus(record.id, record.payment_status);
+      setRecords(prev => prev.map(r => r.id === updated.id ? updated : r));
+    } catch (err) {
+      alert("Ошибка обновления записи: " + err.message);
+    }
   };
 
-  const handleDeleteRecord = (id) => {
-    setRecords(prev => prev.filter(r => r.id !== id));
+  // === Удаление ===
+  const handleDeleteRecord = async (id) => {
+    try {
+      await removeRecord(id);
+      setRecords(prev => prev.filter(r => r.id !== id));
+    } catch (err) {
+      alert("Ошибка удаления: " + err.message);
+    }
   };
+
+  if (loading) {
+    return <h2 style={{ padding: 20 }}>Загрузка...</h2>;
+  }
 
   return (
     <Router>
-      <div>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Navigate to="/records" replace />} />
-          <Route path="/records" element={
-            <RecordList 
-              records={records} 
-              onUpdate={handleUpdateRecord} 
-              onDelete={handleDeleteRecord} 
-            />} 
-          />
-          <Route path="/create" element={<CreateCard onCreate={handleCreateRecord} />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<Navigate to="/records" replace />} />
+
+        <Route
+          path="/records"
+          element={
+            <RecordList
+              records={records}
+              onUpdate={handleUpdateRecord}
+              onDelete={handleDeleteRecord}
+            />
+          }
+        />
+
+        <Route
+          path="/create"
+          element={<CreateCard onCreate={handleCreateRecord} />}
+        />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </Router>
   );
 }
