@@ -10,7 +10,7 @@ import {
   createRecord, 
   updatePaymentStatus, 
   removeRecord 
-} from './api';
+} from './services/api';
 
 function Navigation() {
   return (
