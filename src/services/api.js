@@ -1,7 +1,7 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL; 
 
 export async function getRecords() {
-  const res = await fetch(`${API_BASE_URL}/records`);
+  const res = await fetch(`${API_BASE_URL}/records/`); 
   if (!res.ok) throw new Error('Ошибка при получении записей');
   return res.json();
 }
@@ -13,7 +13,7 @@ export async function getRecord(id) {
 }
 
 export async function createRecord(record) {
-  const res = await fetch(`${API_BASE_URL}/records`, {
+  const res = await fetch(`${API_BASE_URL}/records/`, { 
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
