@@ -1,19 +1,19 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL; 
 
 export async function getRecords() {
-  const res = await fetch(`${API_BASE_URL}/`);
+  const res = await fetch(`${API_BASE_URL}/records`);
   if (!res.ok) throw new Error('Ошибка при получении записей');
   return res.json();
 }
 
 export async function getRecord(id) {
-  const res = await fetch(`${API_BASE_URL}/${id}`);
+  const res = await fetch(`${API_BASE_URL}/records/${id}`);
   if (!res.ok) throw new Error('Запись не найдена');
   return res.json();
 }
 
 export async function createRecord(record) {
-  const res = await fetch(`${API_BASE_URL}/`, {
+  const res = await fetch(`${API_BASE_URL}/records`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(record),
@@ -23,7 +23,7 @@ export async function createRecord(record) {
 }
 
 export async function updatePaymentStatus(id, status) {
-  const res = await fetch(`${API_BASE_URL}/${id}/payment-status`, {
+  const res = await fetch(`${API_BASE_URL}/records/${id}/payment-status`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ payment_status: status }),
@@ -33,7 +33,7 @@ export async function updatePaymentStatus(id, status) {
 }
 
 export async function removeRecord(id) {
-  const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+  const res = await fetch(`${API_BASE_URL}/records/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Ошибка при удалении записи');
   return res.text();
 }
