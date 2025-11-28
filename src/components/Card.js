@@ -8,7 +8,7 @@ export default function Card({ record, onUpdate, onDelete }) {
     const comment = prompt("Оставьте комментарий", currentRecord.comment || "");
     if (!amount) return;
 
-    const updated = { ...currentRecord, payment_status: "Paid", price: amount, comment };
+    const updated = { ...currentRecord, payment_status: "PAID", price: amount, comment };
     setCurrentRecord(updated);
     onUpdate(updated);
   };
@@ -17,41 +17,72 @@ export default function Card({ record, onUpdate, onDelete }) {
     const reason = prompt("Введите причину отмены");
     if (!reason) return;
 
-    const updated = { ...currentRecord, payment_status: "Cancelled", cancelReason: reason };
+    const updated = { ...currentRecord, payment_status: "CANCELLED", cancelReason: reason };
     setCurrentRecord(updated);
     onUpdate(updated);
   };
 
   const getColor = () => {
     switch (currentRecord.payment_status) {
-      case "Paid": return "green";
-      case "Pending": return "yellow";
-      case "Cancelled": return "red";
+      case "PAID": return "green";
+      case "PENDING": return "yellow";
+      case "CANCELLED": return "red";
       default: return "gray";
     }
   };
 
+  const isPending = currentRecord.payment_status === "PENDING";
+
   return (
-    <div style={{ border: `2px solid ${getColor()}`, padding: "10px", marginBottom: "10px" }}>
+    <div style={{ border: `2px solid ${getColor()}`, padding: "16px", marginBottom: "12px", borderRadius: "8px" }}>
       <p><b>Клиент:</b> {currentRecord.client}</p>
       <p><b>Автомобиль:</b> {currentRecord.car}</p>
       <p><b>Услуга:</b> {currentRecord.service}</p>
-      <p><b>Сумма:</b> {currentRecord.price}</p>
+      <p><b>Сумма:</b> {currentRecord.price} ₽</p>
       <p><b>Дата:</b> {currentRecord.date}</p>
-      <p><b>Статус:</b> {currentRecord.payment_status}</p>
-      {currentRecord.payment_status === "Cancelled" && (
+      <p><b>Статус:</b> 
+        <span style={{ 
+          padding: "2px 8px", 
+          borderRadius: "4px", 
+          background: getColor(), 
+          color: "white", 
+          marginLeft: "8px", 
+          fontSize: "0.8em" 
+        }}>
+          {currentRecord.payment_status === "PENDING" && "Ожидает оплаты"}
+          {currentRecord.payment_status === "PAID" && "Оплачено"}
+          {currentRecord.payment_status === "CANCELLED" && "Отменено"}
+        </span>
+      </p>
+
+      {currentRecord.cancelReason && (
         <p><b>Причина отмены:</b> {currentRecord.cancelReason}</p>
       )}
       {currentRecord.comment && <p><b>Комментарий:</b> {currentRecord.comment}</p>}
 
-      {currentRecord.payment_status === "Pending" && (
-        <>
-          <button onClick={handlePayment}>Провести</button>
-          <button onClick={handleCancel} style={{ marginLeft: "10px" }}>Отменить</button>
-        </>
+      {/* КНОПКИ ТОЛЬКО ДЛЯ PENDING */}
+      {isPending && (
+        <div style={{ marginTop: "12px" }}>
+          <button onClick={handlePayment} style={{ background: "#28a745", color: "white", padding: "8px 16px", marginRight: "8px" }}>
+            Провести оплату
+          </button>
+          <button onClick={handleCancel} style={{ background: "#dc3545", color: "white", padding: "8px 16px" }}>
+            Отменить запись
+          </button>
+        </div>
       )}
 
-      <button onClick={() => onDelete(currentRecord.id)} style={{ marginLeft: "10px" }}>Удалить</button>
+      {/* КНОПКА УДАЛЕНИЯ ВСЕГДА */}
+      <button 
+        onClick={() => onDelete(currentRecord.id)} 
+        style={{ 
+          marginTop: "12px", 
+          background: "#6c757d", 
+          color: "white", 
+          padding: "8px 16px" 
+        }}>
+        Удалить
+      </button>
     </div>
   );
 }
