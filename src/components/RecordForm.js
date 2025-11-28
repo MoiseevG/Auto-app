@@ -18,63 +18,18 @@ export default function CreateCard({ onCreate }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center px-6">
-      <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-2xl w-full">
-        <h2 className="text-4xl font-extrabold text-center mb-10 bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
+      <div className="create-form">
+        <h2 style={{ textAlign: "center", fontSize: "2.5rem", marginBottom: "30px", color: "#4f46e5" }}>
           Новая запись
         </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {["client", "car", "service"].map(field => (
-            <div key={field}>
-              <label className="block text-lg font-semibold text-gray-700 mb-2">
-                {field === "client" && "Клиент"}
-                {field === "car" && "Автомобиль"}
-                {field === "service" && "Услуга"}
-              </label>
-              <input
-                name={field}
-                value={form[field]}
-                onChange={handleChange}
-                className="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none transition-all text-lg"
-                placeholder={field === "client" ? "Иван Иванов" : field === "car" ? "Toyota Camry" : "Полировка + химчистка"}
-                required
-              />
-            </div>
-          ))}
-
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-lg font-semibold text-gray-700 mb-2">Сумма</label>
-              <input
-                name="price"
-                type="number"
-                value={form.price}
-                onChange={handleChange}
-                className="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:outline-none transition-all text-lg"
-                placeholder="15000"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-lg font-semibold text-gray-700 mb-2">Дата</label>
-              <input
-                name="date"
-                type="date"
-                value={form.date}
-                onChange={handleChange}
-                className="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-all text-lg"
-                required
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xl py-5 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-xl"
-          >
-            Создать запись
-          </button>
+        <form onSubmit={handleSubmit}>
+          <input name="client" value={form.client} onChange={handleChange} placeholder="Клиент (Иван Иванов)" required />
+          <input name="car" value={form.car} onChange={handleChange} placeholder="Автомобиль (Lada Vesta)" required />
+          <input name="service" value={form.service} onChange={handleChange} placeholder="Услуга (Замена масла + фильтры)" required />
+          <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Сумма (8500)" required />
+          <input name="date" type="date" value={form.date} onChange={handleChange} required />
+          <button type="submit">Создать запись</button>
         </form>
       </div>
     </div>

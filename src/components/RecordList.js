@@ -4,49 +4,40 @@ import Card from "./Card";
 export default function RecordList({ records, onUpdate, onDelete }) {
   const [filter, setFilter] = useState("all");
 
-  const filters = [
-    { id: "all", label: "Все записи", icon: "📋" },
-    { id: "PENDING", label: "В работе", icon: "⏳", color: "bg-yellow-500" },
-    { id: "PAID", label: "Оплачено", icon: "✓", color: "bg-emerald-500" },
-    { id: "CANCELLED", label: "Отменено", icon: "✗", color: "bg-red-500" },
-  ];
-
-  const filtered = filter === "all" ? records : records.filter(r => r.payment_status === filter);
+  const filtered = filter === "all" 
+    ? records 
+    : records.filter(r => r.payment_status === filter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">Записи автосервиса</h1>
+    <div className="container">
+      <h1 style={{ textAlign: "center", fontSize: "2.8rem", color: "white", margin: "40px 0", textShadow: "2px 2px 10px rgba(0,0,0,0.5)" }}>
+        Автосервис — Записи
+      </h1>
 
-        {/* Фильтры */}
-        <div className="flex flex-wrap justify-center gap-4 mb-10">
-          {filters.map(f => (
-            <button
-              key={f.id}
-              onClick={() => setFilter(f.id)}
-              className={`px-8 py-4 rounded-2xl font-bold text-white shadow-lg transform transition-all duration-300 hover:scale-110 ${
-                filter === f.id ? "ring-4 ring-white ring-opacity-60" : ""
-              } ${f.color || "bg-gradient-to-r from-purple-500 to-indigo-600"}`}
-            >
-              <span className="text-2xl mr-3">{f.icon}</span>
-              {f.label} ({records.filter(r => f.id === "all" || r.payment_status === f.id).length})
-            </button>
-          ))}
-        </div>
-
-        {/* Карточки */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.length === 0 ? (
-            <div className="col-span-full text-center py-20">
-              <p className="text-3xl text-gray-400">Записей нет</p>
-            </div>
-          ) : (
-            filtered.map(record => (
-              <Card key={record.id} record={record} onUpdate={onUpdate} onDelete={onDelete} />
-            ))
-          )}
-        </div>
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+        <button onClick={() => setFilter("all")} className="btn" style={{ background: filter === "all" ? "#6366f1" : "#8b5cf6", margin: "0 8px" }}>
+          Все ({records.length})
+        </button>
+        <button onClick={() => setFilter("PENDING")} className="btn" style={{ background: "#f59e0b", margin: "0 8px" }}>
+          В работе ({records.filter(r => r.payment_status === "PENDING").length})
+        </button>
+        <button onClick={() => setFilter("PAID")} className="btn" style={{ background: "#10b981", margin: "0 8px" }}>
+          Оплачено ({records.filter(r => r.payment_status === "PAID").length})
+        </button>
+        <button onClick={() => setFilter("CANCELLED")} className="btn" style={{ background: "#ef4444", margin: "0 8px" }}>
+          Отменено ({records.filter(r => r.payment_status === "CANCELLED").length})
+        </button>
       </div>
+
+      {filtered.length === 0 ? (
+        <p style={{ textAlign: "center", fontSize: "1.8rem", color: "white", marginTop: "100px" }}>
+          Записей нет
+        </p>
+      ) : (
+        filtered.map(record => (
+          <Card key={record.id} record={record} onUpdate={onUpdate} onDelete={onDelete} />
+        ))
+      )}
     </div>
   );
 }
