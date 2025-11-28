@@ -39,7 +39,7 @@ function App() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // === Загружаем данные при загрузке фронта ===
+  
   useEffect(() => {
     async function load() {
       try {
